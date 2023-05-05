@@ -11,7 +11,7 @@
 - The "Add Data" button will add two new mock GHG reports, one for 2021 and one for 2022.
 - The "Load Data" button will load the two new mock reports from the database and display them.
 - Entity Framework handles all of the JSON serialization and deserialization which can be found in `PrototypeDbContext.cs`
-- The JSON activity data in the can be copy and pasted from the database to the `json.json` file, which will format it for viewing.
+- The JSON activity data can be copy and pasted from the database to the `json.json` file, which will format it for viewing.
 - To access the local database follow these steps:
     1. In the top toolbar of Visual Studio open View -> SQL Server Object Explorer.
     2. In the SQL Server Object Explorer expand SQL Server -> (localdb)\MSSQLLocalDB -> Databases -> PrototypeDbContext -> Tables.
