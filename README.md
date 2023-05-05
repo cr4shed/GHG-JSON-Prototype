@@ -6,6 +6,8 @@
 3. Click the green "< > Code" button on this repository.
 4. Copy the HTTPS link.
 5. Paste the link in Visual Studio in the "Repository location" field.
+6. In the opened solution, at the top toolbar open View -> Other Windows -> Package Manager Console.
+7. In the Package Manager Console type "Update-Database" and click enter to create the local database.
 
 ### Application Information:
 - The "Add Data" button will add two new mock GHG reports, one for 2021 and one for 2022.
