@@ -1,0 +1,135 @@
+﻿@page "/"
+@using JsonPrototype.Data.Models;
+@using JsonPrototype.Data;
+
+@if (AddSuccess)
+{
+    <h3>Success!</h3>
+}
+
+<button @onclick="AddData">
+    Add Data!
+</button>
+
+<button @onclick="LoadData">
+    Load Data!
+</button>
+
+@if (DataLoaded) 
+{
+    @foreach(Report report in Reports)
+    {
+        <div>
+            <h1>Report @report.ReportId (@report.ReportYear) for Facility @report.FacilityId</h1>
+            @foreach(var activity in report.Activities)
+            {
+                <h3>@(activity.Key)</h3>
+                <ul>
+                    @if (activity.Value.GetType() == typeof(_2021ElectricityImport))
+                    {
+                        _2021ElectricityImport parsedActivity = (_2021ElectricityImport)activity.Value;
+                        <li>Specified Source Emissions: @parsedActivity.SpecifiedSourcesEmissions</li>
+                        <li>Unspecified Source Emissions: @parsedActivity.UnspecifiedSourcesEmissions</li>
+                        <li>Total Emissions: @parsedActivity.TotalEmissions</li>
+                    }
+                    else if (activity.Value.GetType() == typeof(_2022ElectricityImport))
+                    {
+                        _2022ElectricityImport parsedActivity = (_2022ElectricityImport)activity.Value;
+                        <li>Specified Imported Electricity: @parsedActivity.SpecifiedImportedElectricity</li>
+                        <li>Specified Imported Electricity Emissions: @parsedActivity.SpecifiedImportedElectricityEmissions</li>
+                        <li>Unspecified Imported Electricity: @parsedActivity.UnspecifiedImportedElectricity</li>
+                        <li>Unspecified Imported Electricity Emissions:@parsedActivity.UnspecifiedImportedElectricityEmissions</li>
+                        <li>Specified Exported Electricity: @parsedActivity.SpecifiedExportedElectricity</li>
+                        <li>Specified Exported Electricity Emissions: @parsedActivity.SpecifiedExportedElectricityEmissions</li>
+                        <li>Unspecified Exported Electricity: @parsedActivity.UnspecifiedExportedElectricity</li>
+                        <li>Unspecified Exported Electricity Emissions: @parsedActivity.UnspecifiedExportedElectricityEmissions</li>
+                        <li>Canada Entitlement Power Electricity: @parsedActivity.EntitlementPowerElectricity</li>
+                        <li>Total Imported Electricity: @parsedActivity.TotalImportedElectricity</li>
+                        <li>Total Imported Electricity Emissions: @parsedActivity.TotalImportedElectricityEmissions</li>
+                        <li>Total Exported Electricity: @parsedActivity.TotalExportedElectricity</li>
+                        <li>Total Exported Electricity Emissions: @parsedActivity.TotalExportedElectricityEmissions</li>
+                    }
+                    else if (activity.Value.GetType() == typeof(GeneralStationaryCombustion))
+                    {
+                        GeneralStationaryCombustion parsedActivity = (GeneralStationaryCombustion)activity.Value;
+
+                        foreach(FuelGroup group in parsedActivity.UsefulEnergyFuelGroups)
+                        {
+                            <li>GSC Unit Name: @group.GscUnitName</li>
+                            <li>Description: @group.Description</li>
+                            <li>Fuels:</li>
+                                <ul>
+                                    @foreach(Fuel fuel in group.Fuels)
+                                    {
+                                        <li><b>Fuel Type</b>: @fuel.FuelType</li>
+                                        <li>Fuel Amount: @fuel.FuelAmount</li>
+                                        <li>HHV Measured or Default: @fuel.HhvMeasuredOrDefault</li>
+                                        <li>Weighted Average High Heating Value: @fuel.WeightedAverageHighHeatingValue</li>
+                                        <li>Weighted Average Carbon Content: @fuel.WeightedAverageCarbonContent</li>
+                                        <li>Steam Generation: @fuel.SteamGeneration</li>
+                                        <li>Total Heat Input: @fuel.TotalHeatInput</li>
+                                        <li>CO2 Measured or Default: @fuel.Co2MeasuredOrDefault</li>
+                                        <li>CO2 Emission Factor: @fuel.Co2EmissionFactor</li>
+                                        <li>CO2 Emission Factor Unit: @fuel.Co2EmissionFactorUnit</li>
+                                        <li>CO2 Methodology: @fuel.Co2Methodology</li>
+                                        <li>CO2 Emissions: @fuel.Co2Emissions</li>
+                                        <li>CO2 Emissions CO2e: @fuel.Co2EmissionsCo2e</li>
+                                        <li>CH4 Measured or Default: @fuel.Ch4MeasuredOrDefault</li>
+                                        <li>CH4 Emission Factor: @fuel.Ch4EmissionFactor</li>
+                                        <li>CH4 Emission Factor Unit: @fuel.Ch4EmissionFactorUnit</li>
+                                        <li>CH4 Methodology: @fuel.Ch4Methodology</li>
+                                        <li>CH4 Emissions: @fuel.Ch4Emissions</li>
+                                        <li>CH4 Emissions CO2e: @fuel.Ch4EmissionsCo2e</li>
+                                        <li>N2O Measured or Default: @fuel.N2oMeasuredOrDefault</li>
+                                        <li>N2O Emission Factor: @fuel.N2oEmissionFactor</li>
+                                        <li>N2O Emission Factor Unit: @fuel.N2oEmissionFactorUnit</li>
+                                        <li>N2O Methodology: @fuel.N2oMethodology</li>
+                                        <li>N2O Emissions: @fuel.N2oEmissions</li>
+                                        <li>N2O Emissions CO2e: @fuel.N2oEmissionsCo2e</li>
+                                        <li>Alternative Methodology Description: @fuel.AlternativeMethodologyDescription</li>
+                                    }
+                                </ul>
+                        }
+                        foreach (FuelGroup group in parsedActivity.NoUsefulEnergyFuelGroups)
+                        {
+                            <li>GSC Unit Name: @group.GscUnitName</li>
+                            <li>Description: @group.Description</li>
+                            <li>Fuels: </li>
+                                <ul>
+                                    @foreach (Fuel fuel in group.Fuels)
+                                    {
+                                        <li><b>Fuel Type</b>: @fuel.FuelType</li>
+                                        <li>Fuel Amount: @fuel.FuelAmount</li>
+                                        <li>HHV Measured or Default: @fuel.HhvMeasuredOrDefault</li>
+                                        <li>Weighted Average High Heating Value: @fuel.WeightedAverageHighHeatingValue</li>
+                                        <li>Weighted Average Carbon Content: @fuel.WeightedAverageCarbonContent</li>
+                                        <li>Steam Generation: @fuel.SteamGeneration</li>
+                                        <li>Total Heat Input: @fuel.TotalHeatInput</li>
+                                        <li>CO2 Measured or Default: @fuel.Co2MeasuredOrDefault</li>
+                                        <li>CO2 Emission Factor: @fuel.Co2EmissionFactor</li>
+                                        <li>CO2 Emission Factor Unit: @fuel.Co2EmissionFactorUnit</li>
+                                        <li>CO2 Methodology: @fuel.Co2Methodology</li>
+                                        <li>CO2 Emissions: @fuel.Co2Emissions</li>
+                                        <li>CO2 Emissions CO2e: @fuel.Co2EmissionsCo2e</li>
+                                        <li>CH4 Measured or Default: @fuel.Ch4MeasuredOrDefault</li>
+                                        <li>CH4 Emission Factor: @fuel.Ch4EmissionFactor</li>
+                                        <li>CH4 Emission Factor Unit: @fuel.Ch4EmissionFactorUnit</li>
+                                        <li>CH4 Methodology: @fuel.Ch4Methodology</li>
+                                        <li>CH4 Emissions: @fuel.Ch4Emissions</li>
+                                        <li>CH4 Emissions CO2e: @fuel.Ch4EmissionsCo2e</li>
+                                        <li>N2O Measured or Default: @fuel.N2oMeasuredOrDefault</li>
+                                        <li>N2O Emission Factor: @fuel.N2oEmissionFactor</li>
+                                        <li>N2O Emission Factor Unit: @fuel.N2oEmissionFactorUnit</li>
+                                        <li>N2O Methodology: @fuel.N2oMethodology</li>
+                                        <li>N2O Emissions: @fuel.N2oEmissions</li>
+                                        <li>N2O Emissions CO2e: @fuel.N2oEmissionsCo2e</li>
+                                        <li>Alternative Methodology Description: @fuel.AlternativeMethodologyDescription</li>
+                                    }
+                                </ul>
+                        }
+                    }
+                </ul>
+            }
+        </div>
+    }
+}
