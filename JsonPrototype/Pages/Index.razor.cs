@@ -21,6 +21,20 @@ namespace JsonPrototype.Pages
             StateHasChanged();
         }
 
+        public async Task UpdateData()
+        {
+            using var dbContext = DbContextFactory.CreateInstance();
+            using var dbContextTwo = DbContextFactory.CreateInstance();
+
+            Report report = await dbContext.Reports.Where(r => r.ReportYear == 2022).FirstOrDefaultAsync();
+
+            if (report != null)
+            {
+                ((_2022ElectricityImport)report.Activities["ElectricityImport"]).SpecifiedExportedElectricity = 10;
+                dbContext.SaveChangesAsync();
+            }
+        }
+
         public async Task AddData()
         {            
             // Setup.

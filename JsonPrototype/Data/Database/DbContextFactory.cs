@@ -13,10 +13,7 @@ namespace JsonPrototype.Data
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            dbContextOptions = new DbContextOptionsBuilder<PrototypeDbContext>()
-                .UseSqlServer(configuration.GetConnectionString(connectionStringID))
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-                .Options;
+            dbContextOptions = PrototypeDbContext.EFCoreSetup(new DbContextOptionsBuilder<PrototypeDbContext>(), configuration.GetConnectionString(connectionStringID));
         }
 
         public static PrototypeDbContext CreateInstance()

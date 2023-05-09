@@ -6,8 +6,7 @@ using JsonPrototype.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
-builder.Services.AddDbContext<PrototypeDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("PrototypeDbContext") ?? throw new InvalidOperationException("Connection string 'PrototypeDbContext' not found.")));
+builder.Services.AddDbContext<PrototypeDbContext>(options => PrototypeDbContext.EFCoreSetup(options, builder.Configuration.GetConnectionString("PrototypeDbContext")));
 builder.Services.AddServerSideBlazor();
 
 DbContextFactory.SetConnectionString("PrototypeDbContext");

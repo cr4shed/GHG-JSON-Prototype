@@ -7,18 +7,21 @@ using JsonPrototype.Data.Models;
 using Newtonsoft.Json;
 using System.Data;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace JsonPrototype.Data
 {
     public class PrototypeDbContext : DbContext
     {
+        public static readonly ILoggerFactory EFLogger = LoggerFactory.Create(builder => { builder.AddDebug(); });
+
         public PrototypeDbContext (DbContextOptions<PrototypeDbContext> options) : base(options) { }
 
         public DbSet<Report> Reports { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // JSON settings.
+            // Example advanced JSON settings.
             JsonSerializerSettings exampleAdvancedSettings = new()
             {
                 // For more details:
@@ -31,11 +34,12 @@ namespace JsonPrototype.Data
                 DateFormatString = "yyyy'-'MM'-'dd'",
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             };
+
+            // JSON settings.
             JsonSerializerSettings defaultSettings = new()
             {
                 TypeNameHandling = TypeNameHandling.Auto
             };
-
 
             modelBuilder.Entity<Report>().ToTable("Reports");
             
@@ -49,6 +53,15 @@ namespace JsonPrototype.Data
                     v => JsonConvert.SerializeObject(v, defaultSettings),
                     v => JsonConvert.DeserializeObject<Dictionary<string, BaseActivity>>(v, defaultSettings)
                 );
+        }
+
+        public static DbContextOptions<PrototypeDbContext> EFCoreSetup(DbContextOptionsBuilder options, string connectionString)
+        {
+            options.UseLoggerFactory(EFLogger);
+            options.EnableSensitiveDataLogging();
+            options.UseSqlServer(connectionString);
+
+            return (DbContextOptions<PrototypeDbContext>)options.Options;
         }
     }
 }
