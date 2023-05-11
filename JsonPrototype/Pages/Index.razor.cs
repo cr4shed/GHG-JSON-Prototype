@@ -40,51 +40,36 @@ namespace JsonPrototype.Pages
             // Setup.
             using var dbContext = DbContextFactory.CreateInstance();
 
-            FuelGroup fuelGroupFoo = new FuelGroup
+            // Create new reports.
+            Report report2021 = new Report()
             {
-                GscUnitName = "Fuel Group Foo",
-                Description = "Foo",
-                Fuels = new()
-                {
-                    GetExampleFuel("Anthracite Coal"),
-                    GetExampleFuel("Coal Coke"),
-                    GetExampleFuel("Coke Oven Gas"),
-                    GetExampleFuel("Bituminous Coal"),
-                    GetExampleFuel("Crude Oil")
-                }
+                FacilityId = 123,
+                ReportYear = 2021,
             };
-            FuelGroup fuelGroupBar = new FuelGroup
+            Report report2022 = new Report()
             {
-                GscUnitName = "Fuel Group Bar",
-                Description = "Bar",
-                Fuels = new()
-                {
-                    GetExampleFuel("Wood Waste"),
-                    GetExampleFuel("Natural Gas"),
-                    GetExampleFuel("Municipal Solid Waste"),
-                    GetExampleFuel("Ethylene"),
-                }
+                FacilityId = 123,
+                ReportYear = 2022,
             };
 
             // Define 2021 activities.
             _2021ElectricityImport ei2021 = new()
             {
                 SpecifiedSourcesEmissions = 121,
-                UnspecifiedSourcesEmissions = 25
+                UnspecifiedSourcesEmissions = 25,
+                ReportId = report2021.ReportId
             };
-            GeneralStationaryCombustion gsc2021 = new()
-            {
-                UsefulEnergyFuelGroups =
+            GeneralStationaryCombustion gsc2021 = new() { ReportId = report2021.ReportId };
+            gsc2021.UsefulEnergyFuelGroups = new()
                 {
-                    fuelGroupFoo,
-                    fuelGroupBar
-                },
-                NoUsefulEnergyFuelGroups =
+                    GetExampleFuelGroup(gsc2021.ActivityId),
+                    GetExampleFuelGroup(gsc2021.ActivityId)
+                };
+            gsc2021.NoUsefulEnergyFuelGroups = new()
                 {
-                    fuelGroupBar,
-                    fuelGroupFoo
-                }
-            };
+                    GetExampleFuelGroup(gsc2021.ActivityId),
+                    GetExampleFuelGroup(gsc2021.ActivityId)
+                };
 
             // Define 2022 activities.
             _2022ElectricityImport ei2022 = new()
@@ -97,53 +82,42 @@ namespace JsonPrototype.Pages
                 SpecifiedExportedElectricityEmissions = 1,
                 UnspecifiedExportedElectricity = 100,
                 UnspecifiedExportedElectricityEmissions = 1,
-                EntitlementPowerElectricity = 5
+                EntitlementPowerElectricity = 5,
+                ReportId = report2022.ReportId
             };
-            GeneralStationaryCombustion gsc2022 = new()
-            {
-                UsefulEnergyFuelGroups =
+            GeneralStationaryCombustion gsc2022 = new() { ReportId = report2022.ReportId };
+            gsc2022.UsefulEnergyFuelGroups = new()
                 {
-                    fuelGroupFoo,
-                    fuelGroupBar
-                },
-                NoUsefulEnergyFuelGroups =
+                    GetExampleFuelGroup(gsc2022.ActivityId),
+                    GetExampleFuelGroup(gsc2022.ActivityId)
+                };
+            gsc2022.NoUsefulEnergyFuelGroups = new()
                 {
-                    fuelGroupBar,
-                    fuelGroupFoo
-                }
-            };
+                    GetExampleFuelGroup(gsc2022.ActivityId),
+                    GetExampleFuelGroup(gsc2022.ActivityId)
+                };
 
-            // Create new reports.
-            Report report2021 = new Report()
+            // Set report activities.
+            report2021.Activities = new()
             {
-                FacilityId = 123,
-                ReportYear = 2021,
-                Activities =
                 {
-                    { 
-                        ei2021.ActivityName, 
-                        ei2021
-                    },
-                    {
-                        gsc2021.ActivityName,
-                        gsc2021
-                    }
+                    ei2021.ActivityName,
+                    ei2021
+                },
+                {
+                    gsc2021.ActivityName,
+                    gsc2021
                 }
             };
-            Report report2022 = new Report()
+            report2022.Activities = new()
             {
-                FacilityId = 123,
-                ReportYear = 2022,
-                Activities =
                 {
-                    {
-                        ei2022.ActivityName,
-                        ei2022
-                    },
-                    {
-                        gsc2022.ActivityName,
-                        gsc2022
-                    }
+                    ei2022.ActivityName,
+                    ei2022
+                },
+                {
+                    gsc2022.ActivityName,
+                    gsc2022
                 }
             };
 
@@ -157,10 +131,35 @@ namespace JsonPrototype.Pages
             StateHasChanged();
         }
 
-        private Fuel GetExampleFuel(string fuelType)
+        public FuelGroup GetExampleFuelGroup(Guid parentId)
+        {
+            FuelGroup fuelGroup = new FuelGroup
+            {
+                ParentActivityId = parentId,
+                GscUnitName = "Fuel Group Bar",
+                Description = "Bar",
+            };
+            fuelGroup.Fuels = new()
+                {
+                    GetExampleFuel("Wood Waste", fuelGroup.ActivityId),
+                    GetExampleFuel("Natural Gas", fuelGroup.ActivityId),
+                    GetExampleFuel("Municipal Solid Waste", fuelGroup.ActivityId),
+                    GetExampleFuel("Ethylene", fuelGroup.ActivityId),
+                    GetExampleFuel("Anthracite Coal", fuelGroup.ActivityId),
+                    GetExampleFuel("Coal Coke", fuelGroup.ActivityId),
+                    GetExampleFuel("Coke Oven Gas", fuelGroup.ActivityId),
+                    GetExampleFuel("Bituminous Coal", fuelGroup.ActivityId),
+                    GetExampleFuel("Crude Oil", fuelGroup.ActivityId)
+                };
+            return fuelGroup;
+
+        }
+
+        private Fuel GetExampleFuel(string fuelType, Guid parentId)
         {
             return new Fuel
             {
+                ParentActivityId = parentId,
                 FuelType = fuelType,
                 FuelAmount = rand.Next(0, 999999),
                 HhvMeasuredOrDefault = "Measured",

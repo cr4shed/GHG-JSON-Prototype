@@ -1,7 +1,10 @@
 ﻿namespace JsonPrototype.Data
 {
-    public class Fuel
+    public class Fuel : NestedActivity
     {
+        public override string ActivityName { get; } = "Fuel";
+        public override Guid ParentActivityId { get; set; }
+
         public string FuelType { get; set; }
         public decimal FuelAmount { get; set; }
 
