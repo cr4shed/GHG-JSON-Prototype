@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using JsonPrototype.Data.Models;
+using JsonPrototype.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,8 +16,13 @@ namespace JsonPrototype.Api
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
-        }
+			using var dbContext = DbContextFactory.CreateInstance();
+            var Reports = dbContext.Reports.ToList();
+            //var report = Reports[0];
+            var json = JsonSerializer.Serialize(Reports);
+            yield return json;
+            //return Reports;
+		}
 
         // GET api/<JsonController>/5
         [HttpGet("{id}")]
