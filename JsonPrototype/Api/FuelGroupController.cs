@@ -7,16 +7,16 @@ namespace JsonPrototype.Api
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class FuelController : ControllerBase
+	public class FuelGroupController : ControllerBase
 	{
-		// GET: api/<ValuesController>
+		// GET: api/<FuelGroupController>
 		[HttpGet]
-		public IEnumerable<Fuel> Get()
+		public IEnumerable<FuelGroup> Get()
 		{
 			using var dbContext = DbContextFactory.CreateInstance();
 			var Reports = dbContext.Reports.ToList();
 
-			List<Fuel> fuel = new List<Fuel>();
+			List<FuelGroup> fuelgroup = new List<FuelGroup>();
 
 			foreach (var report in Reports)
 			{
@@ -25,35 +25,45 @@ namespace JsonPrototype.Api
 					if (activity.Value.GetType() == typeof(GeneralStationaryCombustion))
 					{
 						GeneralStationaryCombustion parsedActivity = (GeneralStationaryCombustion)activity.Value;
-						parsedActivity.NoUsefulEnergyFuelGroups.ForEach(a => { fuel.AddRange(a.Fuels); });
-						parsedActivity.UsefulEnergyFuelGroups.ForEach(a => { fuel.AddRange(a.Fuels); });
+		
+						foreach (var a in parsedActivity.NoUsefulEnergyFuelGroups)
+						{
+							a.Fuels = null;
+							fuelgroup.Add(a);
+						}
+
+						foreach (var a in parsedActivity.UsefulEnergyFuelGroups)
+						{
+							a.Fuels = null;
+							fuelgroup.Add(a);
+						}
 					}
 				}
+				
 			}
-			return fuel;
+			return fuelgroup;
 		}
 
-
-		// GET api/<ValuesController>/5
+		// GET api/<FuelGroupController>/5
 		[HttpGet("{id}")]
 		public string Get(int id)
 		{
 			return "value";
 		}
 
-		// POST api/<ValuesController>
+		// POST api/<FuelGroupController>
 		[HttpPost]
 		public void Post([FromBody] string value)
 		{
 		}
 
-		// PUT api/<ValuesController>/5
+		// PUT api/<FuelGroupController>/5
 		[HttpPut("{id}")]
 		public void Put(int id, [FromBody] string value)
 		{
 		}
 
-		// DELETE api/<ValuesController>/5
+		// DELETE api/<FuelGroupController>/5
 		[HttpDelete("{id}")]
 		public void Delete(int id)
 		{
